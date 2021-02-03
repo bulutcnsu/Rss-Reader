@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval' http://platform.linkedin.com ">
+    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+    <title>NEWS!</title>
+    <link rel="stylesheet" href="./index.css">
+  </head>
+  <body>
+
+   
+    <div class="container"></div>
+    <!-- You can also require other files to run in this process -->
+    <script type="module"  src="index.js"></script>
+    <script src="./node_modules/rss-parser/dist/rss-parser.min.js"></script>
+
+
+<script>
+// Note: some RSS feeds can't be loaded in the browser due to CORS security.
+// To get around this, you can use a proxy.
+const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
+ 
+let parser = new RSSParser({
+  headers: {'User-Agent': 'something different'},
+  timeout: 5000,
+});
+
+let data = [
+
+'https://www.ntv.com.tr/gundem.rss',
+'https://www.ntv.com.tr/turkiye.rss'
+,'https://www.ntv.com.tr/teknoloji.rss'
+, 'https://www.ntv.com.tr/saglik.rss'
+
+,'http://feeds.bbci.co.uk/turkce/rss.xml',
+'https://www.bbc.com/turkce/ekonomi/index.xml',
+
+'https://www.haberturk.com/rss',  
+'https://www.haberturk.com/rss/ekonomi.xml',
+'https://www.haberturk.com/rss/spor.xml',
+
+'http://www.cumhuriyet.com.tr/rss/son_dakika.xml',
+'https://www.hurriyet.com.tr/rss/anasayfa'
+] 
+
+//bir tanre diziolusturcam cnn,ntv,vs once secim yap sonra açılır liste sonra detay oku
+let kanallar=['NTV GUNDEM ' ,'NTV TURKIYE','NTV TEKNOLOJİ','NTV SAĞLIK',
+'BBC GUNDEM','BBC EKONOMİ' ,'HABERTURK TUM HABERLER',
+'HABERTURK EKONOMİ', 'HABERTURK SPOR', 'CUMHURİYET SON DAKİKA']
+
+ 
+
+  var solBolum= document.createElement('div');
+  solBolum.setAttribute('id', 'solBolum');
+  document.body.appendChild(solBolum);
+
+ 
+  var sagBolum = document.createElement('div');
+  sagBolum.setAttribute('id', 'sagBolum');
+  document.body.appendChild(sagBolum);
+
+
+
+  var baslik = document.createElement('div');
+   baslik.textContent ='DAILY NEWS';
+  baslik.setAttribute('id', 'baslik');
+  document.getElementById('solBolum').appendChild(baslik);
+
+
+for(i=1; i<=kanallar.length-1;i++){
+   
+  var kanalAdi = document.createElement('div');
+  var bosluk = document.createElement("BR");
+  
+  kanalAdi.textContent = kanallar[i];
+  kanalAdi.isSameNode=bosluk;
+  kanalAdi.setAttribute('id', 'kanallar');
+  document.getElementById('solBolum').appendChild(kanalAdi);
+
+ }
+
+var haberSayisi=0;
+ function secKanal(secilen) {
+       
+  parser.parseURL( data[secilen], function(err, feed) {
+  if (err) throw err;
+  console.log(feed);
+
+  feed.items.forEach(function(item) {
+   
+   
+   let title = document.createElement('div');
+  
+   let img = document.createElement('img');
+   let feedContainer = document.createElement('div');
+    
+    
+    feedContainer.classList.add('feed-container');
+    feedContainer.appendChild(title);
+   
+    
+    title.textContent = item.title;
+  
+    
+    let container = document.querySelector('.container');
+    container.appendChild(feedContainer);
+   
+    haberSayisi++;
+    document.getElementById('sagBolum').appendChild(container.appendChild(feedContainer));
+  })
+  haberKontrol(secilen);
+})
+
+
+
+}
+
+function secHaber(secilen,number) {
+       
+    var sayi = -1;
+   
+
+       parser.parseURL( data[secilen], function(err, feed) {
+        if (err) throw err;
+        console.log(feed);
+     
+       feed.items.forEach(function(item) {
+
+        if(sayi==number){
+    
+         let title = document.createElement('div');
+      
+     
+         let content = document.createElement('div');
+         let haberIcerigi = document.createElement('div');
+ 
+        title.style.borderColor = 'white';
+        title.style.borderRight='5px';
+        title.style.fontSize='26px';
+        title.style.color='#C0392B';
+
+       
+         haberIcerigi.classList.add('haber-Icerigi');
+
+         haberIcerigi.appendChild(title);
+       
+         haberIcerigi.appendChild(content);
+      
+
+         title.textContent = item.title;
+    
+         content.textContent=item.content;
+
+         var icerik=item.content;
+         
+         if(icerik.includes('href=')){
+
+          var firstIndex= icerik.indexOf(">")+1; /*ilk url kısmını sildik*/
+          var sil1 = icerik.substring(firstIndex);
+         }
+       
+         var image,imgReel,width,ilk,son;
+
+          if(icerik.includes('img src')){
+           image=icerik;
+
+           var index1=image.indexOf("src=")+5;
+           imgReel=image.substring(index1);
+
+           var index2=imgReel.indexOf("jpg")+3;
+            imgReel=imgReel.substring(0,index2);
+        
+          }
+          if( icerik.includes('width')){
+          width=icerik;
+
+           var index1=icerik.indexOf("width=");
+            ilk=icerik.substring(index1);
+
+           var index2=ilk.indexOf("&")
+            son=ilk.substring(0,index2);
+           width=son +">";
+           imgReel=imgReel+width;
+
+            }
+         
+           content=imgReel;
+
+         let container = document.querySelector('.container');
+         container.appendChild(haberIcerigi);
+   
+         document.getElementById('sagBolum').innerHTML=' ';
+       
+         document.getElementById('sagBolum').appendChild(container.appendChild(haberIcerigi));
+         
+          kanalKontrol();
+         }
+        
+       else{
+        
+       sayi++;
+
+       } 
+      
+      
+         
+       })
+     })
+     
+     }
+kanalKontrol();
+
+
+function kanalKontrol(){ 
+
+  var k = document.getElementById('solBolum');
+for (var i = 0, len = k.children.length; i < len; i++)
+{
+    (function(index){
+        k.children[i].onclick = function(){
+             
+        
+              document.getElementById('sagBolum').innerHTML=' ';
+                secKanal(index);        
+    
+} 
+    })(i);
+
+}
+
+
+}
+ 
+
+
+
+  function haberKontrol(secilen){
+  var t = document.getElementById('sagBolum');
+
+for (var i = 0, len = t.children.length; i < len; i++)
+{
+    (function(index){
+        t.children[i].onclick = function(){
+           
+                      
+                secHaber(secilen,index);       /*seilen haber kanalı adı*/ 
+    
+} 
+    })(i);
+  
+
+}
+
+}
+
+
+
+ 
+
+
+
+
+</script>
+
+
+
+   <script src="./renderer.js"></script>
+
+  </body>
+</html>
+ 
