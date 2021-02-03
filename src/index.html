@@ -112,9 +112,6 @@ var haberSayisi=0;
   })
   haberKontrol(secilen);
 })
-
-
-
 }
 
 function secHaber(secilen,number) {
@@ -200,16 +197,10 @@ function secHaber(secilen,number) {
         
        else{
         
-       sayi++;
-
-       } 
-      
-      
+       sayi++;  }
          
        })
-     })
-     
-     }
+     }) }
 kanalKontrol();
 
 
@@ -219,22 +210,14 @@ function kanalKontrol(){
 for (var i = 0, len = k.children.length; i < len; i++)
 {
     (function(index){
-        k.children[i].onclick = function(){
-             
-        
+        k.children[i].onclick = function(){  
               document.getElementById('sagBolum').innerHTML=' ';
                 secKanal(index);        
-    
 } 
     })(i);
 
-}
-
-
-}
+}}
  
-
-
 
   function haberKontrol(secilen){
   var t = document.getElementById('sagBolum');
@@ -242,29 +225,14 @@ for (var i = 0, len = k.children.length; i < len; i++)
 for (var i = 0, len = t.children.length; i < len; i++)
 {
     (function(index){
-        t.children[i].onclick = function(){
-           
-                      
+        t.children[i].onclick = function(){              
                 secHaber(secilen,index);       /*seilen haber kanalı adı*/ 
     
 } 
-    })(i);
-  
-
-}
-
-}
-
-
-
- 
-
-
+    })(i);}}
 
 
 </script>
-
-
 
    <script src="./renderer.js"></script>
 
